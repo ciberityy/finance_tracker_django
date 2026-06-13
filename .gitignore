@@ -53,3 +53,4 @@ htmlcov/
 
 # dotenv
 .env
+finance_tracker/settings.py
