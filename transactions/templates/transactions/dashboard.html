@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.username }}</h1>
+    <h3>Total spent : {{ total_spent }} dzd</h3>
+    <ul>
+        {% for key, value in category_data.items %}
+            <li> {{ key }} : {{ value.total }}
+                <ul>
+                    {% for sub in value.subcategories %}
+                    <li>{{ sub.name }} : {{ sub.total }}</li>
+                {% endfor %}    
+            </ul>
+        </li>
+        {% empty %}
+            <li>No transactions yet.</li>
+        {% endfor %}
+    </ul>
+
+    <form method="get" action="{% url 'add' %}">
+    <button type="submit">Add Transaction</button>
+    </form>
+
+     <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>   
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Register</title>
+    </head>  
+     <body>
+        <h2>Log in to your wallet</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Log in</button>
+            <p>
+                new to your wallet ? <a href ="{% url 'register' %}" >Register</a> 
+            </p>
+        </form>
+    </body>
+</html>
