@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Add Category</title>
+    </head>
+    <body>
+    <h2>Add a Category</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Category</button>
+    </form>
+    
+    <form method="get" action="{% url 'dashboard' %}">
+        <button type="submit">Go back to dashboard</button>
+    </form>
+    </body>
+</html>
