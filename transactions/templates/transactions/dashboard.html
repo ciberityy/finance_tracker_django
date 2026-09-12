@@ -5,7 +5,9 @@
 </head>
 <body>
     <h1>Welcome, {{ user.username }}</h1>
-    <h3>Total spent : {{ total_spent }} dzd</h3>
+    <h2>Net : {{ net }} dzd</h2>
+    <h2>Total spent : {{ total_expense }} dzd</h2>
+    <h2>Total income : {{ total_income }} dzd</h2>
     <ul>
         {% for key, value in category_data.items %}
             <li> {{ key }} : {{ value.total }}
@@ -20,8 +22,16 @@
         {% endfor %}
     </ul>
 
-    <form method="get" action="{% url 'add' %}">
+    <form method="get" action="{% url 'add_transaction' %}">
     <button type="submit">Add Transaction</button>
+    </form>
+
+    <form method="get" action="{% url 'view_categories' %}">
+    <button type="submit">View Categories</button>
+    </form>
+
+    <form method="get" action="{% url 'add_category' %}">
+    <button type="submit">Add Category</button>
     </form>
 
      <form method="post" action="{% url 'logout' %}">
