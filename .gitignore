@@ -43,3 +43,10 @@ CLAUDE.md ROADMAP_v2.md
 db.sqlite3
 CLAUDE.md
 ROADMAP_v2.md
+.notes/
+django-env/
+finance_tracker/settings
+finance_tracker/
+transaction/__pycache__/
+transactions/migrations/
+transactions/__pycache__/

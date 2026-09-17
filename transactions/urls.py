@@ -10,5 +10,8 @@ urlpatterns =[
     path("dashboard/", views.dashboard, name="dashboard"),
     path('add_transaction/', views.add_transaction, name='add_transaction'),
     path('add_category/', views.add_category, name='add_category'),
-    path('view_categories/', views.view_categories, name='view_categories')
+    path('view_categories/', views.view_categories, name='view_categories'),
+    path('view_transactions/', views.view_transaction, name='view_transactions'),
+    path('edit_transaction/<int:pk>', views.edit_transaction, name='edit_transaction'),
+    path('delete_transaction/<int:pk>', views.delete_transaction, name='delete_transaction')
 ]

@@ -131,13 +131,43 @@ def view_categories(request):
 
     return render(request, 'transactions/view_categories.html', context)
 
+@login_required
+def view_transaction(request):
+    user = request.user
+    transactions = Transaction.objects.filter(user=user)
 
+    context = {'transactions': transactions}
 
+    return render(request, 'transactions/view_transactions.html', context)
 
+@login_required
+def edit_transaction(request, pk):
+    user = request.user
+    transaction = Transaction.objects.get(pk=pk, user=user)
 
+    if request.method == "POST":
+        f = TransactionForm(request.POST, instance=transaction, user=user)
 
+        if f.is_valid():
+            f.save()
+            return redirect("view_transactions")
+    else:
+        f = TransactionForm(instance=transaction, user=user)
 
+    return render(request, 'transactions/edit_transaction.html', {'form': f})
 
+@login_required
+def delete_transaction(request, pk):
+    user = request.user
+    if request.method == "POST":
+        transaction = Transaction.objects.get(user=user, pk=pk)
+        transaction.delete()
+        return redirect('view_transactions')
+
+    else: 
+        transaction = Transaction.objects.get(user=user, pk=pk)
+        context = {'transaction': transaction}
+        return render(request, 'transactions/delete_confirmation.html', context)
 
 
 
