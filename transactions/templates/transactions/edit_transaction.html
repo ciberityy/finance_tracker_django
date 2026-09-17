@@ -1,16 +1,14 @@
 {% extends 'transactions/base.html' %}
-{% block title %}Add category% endblock %}
+{% block title %}Edit transaction{% endblock %}
 {% block content %}
-
-<h2>Add a Category</h2>
-    <form method="post">
+        <h2>Edit your transactions</h2>
+        <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Add Category</button>
+        <button type="submit">Edit transaction</button>
     </form>
-    
+   
     <form method="get" action="{% url 'dashboard' %}">
         <button type="submit">Go back to dashboard</button>
     </form>
-
-    {% endblock %}
+{% endblock %}

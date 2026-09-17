@@ -1,0 +1,24 @@
+{% extends 'transactions/base.html' %}
+{% block title %}View transaction{% endblock %}
+{% block content %} 
+<h2>Your transactions</h2>
+    <ul>
+        {% for transaction in transactions %}
+        <li>{{ forloop.counter }}. {{transaction.date_time}} : {{ transaction.category }}; amount : {{transaction.amount}} dzd 
+            <a href="{% url 'edit_transaction' transaction.pk %}">Edit</a> 
+            <a href="{% url 'delete_transaction' transaction.pk %}">Delete</a>
+        </li>
+    {% empty %}
+        <li>No transactions yet.</li>
+    {% endfor %}
+    </ul>
+
+    <form method="get" action="{% url 'add_transaction' %}">
+    <button type="submit">Add Transaction</button>
+    </form>
+
+
+    <form method="get" action="{% url 'dashboard' %}">
+        <button type="submit">Go back to dashboard</button>
+    </form>
+{% endblock %}

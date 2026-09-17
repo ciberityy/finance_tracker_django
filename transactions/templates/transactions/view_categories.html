@@ -1,22 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>
-        View_categories
-    </title>
-</head>
-    <body>
-        <h2>Your categories</h2>
-        <ul>
-            {% for category in categories %}
-                <li>{{ forloop.counter }}.{{ category.name}}, type: {{ category.get_kind_display }}</li> 
-                    {% empty %}
-                <li>No categories yet.</li>
-                {% endfor %}
-            </ul>
+{% extends 'transactions/base.html' %}
+{% block title %}View category{% endblock %}
+{% block content %} 
+
+<h2>Your categories</h2>
+    <ul>
+        {% for category in categories %}
+        <li>{{ forloop.counter }}.{{ category.name}}, type: {{ category.get_kind_display }}</li> 
+    {% empty %}
+        <li>No categories yet.</li>
+    {% endfor %}
+    </ul>
         
-            <form method='get' action="{% url 'add_category' %}">
-            <button type ="submit">Add category</button>  
-            </form>
-        </body>
-</html>
+    <form method='get' action="{% url 'add_category' %}">
+    <button type ="submit">Add category</button>  
+    </form>
+
+    {% endblock %}

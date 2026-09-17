@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Welcome, {{ user.username }}</h1>
+{% extends 'transactions/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %} <h1>Welcome, {{ user.username }}</h1>
     <h2>Net : {{ net }} dzd</h2>
     <h2>Total spent : {{ total_expense }} dzd</h2>
     <h2>Total income : {{ total_income }} dzd</h2>
@@ -22,6 +18,10 @@
         {% endfor %}
     </ul>
 
+    <form method="get" action="{% url 'view_transactions' %}">
+    <button type="submit">View transactions</button>
+    </form>
+
     <form method="get" action="{% url 'add_transaction' %}">
     <button type="submit">Add Transaction</button>
     </form>
@@ -37,7 +37,5 @@
      <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
     <button type="submit">Logout</button>   
-    </form>
-
-</body>
-</html>
+</form> 
+{% endblock %}
