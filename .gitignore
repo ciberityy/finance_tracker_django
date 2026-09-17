@@ -38,3 +38,8 @@
   CLAUDE.md                                                                                                  
   ROADMAP_v2.md                                                                                              
   NOTES.md  
+.claude/
+CLAUDE.md ROADMAP_v2.md
+db.sqlite3
+CLAUDE.md
+ROADMAP_v2.md
