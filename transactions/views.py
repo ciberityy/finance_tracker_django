@@ -11,21 +11,22 @@ import json
 def home(request):
     """
     Root entry point that redirects authenticated users to dashboard,
-    unauthenticated users to registration.
+    unauthenticated users to login.
     """
     if request.user.is_authenticated:
         return redirect('dashboard')
 
-    return redirect('register')
+    return redirect('login')
 
 @login_required
 def dashboard(request):
     """
-    Display user's spending aggregated by category and subcategory.
+    Display user's financial summary: total income, total expense, net, and spending by category.
 
     Uses two-pass aggregation: first query rolls all transactions into top-level
     categories (using Coalesce to treat parentless categories as top-level), then
-    a second pass attaches subcategory breakdown to each parent. This assumes
+    a second pass attaches subcategory breakdown to each parent. Computes totals
+    by category kind (Income vs Expense) to derive net position. This assumes
     categories are at most two levels deep; deeper hierarchies would require
     recursive aggregation.
     """
@@ -57,12 +58,12 @@ def dashboard(request):
         parent_name = item["category__parent__name"]
         # Subcategories are only attached to parents that were already aggregated.
         # This filters out orphaned transactions and top-level categories with no parent.
-        if parent_name != None and parent_name in category_data:
+        if parent_name is not None and parent_name in category_data:
             subcategory_name = item['category__name']
             sub_total = item.get("total")
             category_data[parent_name]['subcategories'].append({"name": subcategory_name, "total": sub_total})
 
-
+    
     
     context = {
         "total_expense": total_expense,
@@ -74,17 +75,25 @@ def dashboard(request):
     return render(request, "transactions/dashboard.html", context)
 
 def register(request):
-    """Create a new user account and immediately log them in upon success."""
+    """
+    Display registration form and create a new user account.
+
+    If the user is already authenticated, immediately redirects to dashboard to
+    prevent session swapping. On successful POST, creates the account, logs the
+    user in, and redirects to dashboard.
+    """
+    user = request.user
+    if user.is_authenticated():
+        return redirect('dashboard')
+
     if request.method == "POST":
         f = CustomUserCreationForm(request.POST)
         if f.is_valid():
             user = f.save()
             login(request, user)
             return redirect('dashboard')
-
     else:
         f = CustomUserCreationForm()
-
     return render(request, 'registration/register.html', {'form' : f})
 
 @login_required
@@ -123,6 +132,7 @@ def add_category(request):
 
 @login_required
 def view_categories(request):
+    """Display all categories (top-level and subcategories) for the logged-in user."""
     user = request.user
     categories = Category.objects.filter(user=user)
 
@@ -133,6 +143,7 @@ def view_categories(request):
 
 @login_required
 def view_transaction(request):
+    """Display all transactions for the logged-in user, ordered by date_time (most recent first)."""
     user = request.user
     transactions = Transaction.objects.filter(user=user)
 
@@ -142,6 +153,7 @@ def view_transaction(request):
 
 @login_required
 def edit_transaction(request, pk):
+    """Edit an existing transaction for the logged-in user. Reuses TransactionForm with the transaction instance."""
     user = request.user
     transaction = Transaction.objects.get(pk=pk, user=user)
 
@@ -158,13 +170,14 @@ def edit_transaction(request, pk):
 
 @login_required
 def delete_transaction(request, pk):
+    """Delete a transaction after user confirmation. GET renders confirmation page; POST performs the delete."""
     user = request.user
     if request.method == "POST":
         transaction = Transaction.objects.get(user=user, pk=pk)
         transaction.delete()
         return redirect('view_transactions')
 
-    else: 
+    else:
         transaction = Transaction.objects.get(user=user, pk=pk)
         context = {'transaction': transaction}
         return render(request, 'transactions/delete_confirmation.html', context)

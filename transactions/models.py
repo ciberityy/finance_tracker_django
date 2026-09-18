@@ -25,8 +25,8 @@ class Category(models.Model):
         EXPENSE = "Ex", "Expense"
 
     name = models.CharField(max_length=200,)
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', related_name='subcategories', null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, related_name="categories", on_delete=models.CASCADE)
     # 'kind' (Income/Expense) is stored on Category, not Transaction, because all
     # transactions within a category must share the same type. This supports the
     # two-level hierarchy design and enables dashboard aggregation by kind.
@@ -43,24 +43,23 @@ class Transaction(models.Model):
     """
     A single financial transaction recorded by a user.
 
-    Transactions are scoped to a user and optionally associated with a category.
-    If a category is deleted, the transaction remains with category=NULL.
+    Transactions are scoped to a user and must be associated with a category.
+    Category deletion is prevented if transactions reference it (on_delete=PROTECT).
     """
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date_time = models.DateTimeField(default=timezone.now)
-    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category, related_name='transactions', null=False, blank=False, on_delete=models.PROTECT)
     description = models.CharField(max_length=100, default='', blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='transactions', on_delete=models.CASCADE)
     
 
     def __str__(self):
         """
-        Return a human-readable string representation.
+        Return a human-readable string representation showing date, category name, and amount.
 
-        Shows date, category name, and amount if category is set; otherwise
-        returns 'Unknown' to handle transactions with deleted categories.
+        The fallback branch (if not self.category) is unreachable after save since
+        category is now required (null=False, on_delete=PROTECT).
         """
-        if self.category:
-            return f"{self.date_time.date()}: {self.category.name} - {self.amount}"
-        else:
-            return "Unknown"
+    
+        return f"{self.date_time.date()}: {self.category.name} - {self.amount}"
+        
