@@ -83,7 +83,7 @@ def register(request):
     user in, and redirects to dashboard.
     """
     user = request.user
-    if user.is_authenticated():
+    if user.is_authenticated:
         return redirect('dashboard')
 
     if request.method == "POST":
@@ -111,7 +111,7 @@ def add_transaction(request):
     else:
         f = TransactionForm(user=request.user)
 
-    return render(request, 'transactions/add.html', {'form' : f}) 
+    return render(request, 'transactions/add_transaction.html', {'form' : f}) 
 
 @login_required
 def add_category(request):
