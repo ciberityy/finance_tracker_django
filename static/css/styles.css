@@ -1,3 +1,19 @@
 .app-navbar {
     background-color: #a4a8ac;
 }
+
+.logout-btn {
+    border: none;
+    cursor: pointer;
+    background: transparent; 
+}
+
+.logout-btn:hover {
+    text-decoration: underline;
+}
+
+.group-elements-r {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}

@@ -25,8 +25,19 @@
         <body>
             <nav class="navbar app-navbar">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="{% url 'dashboard' %}">Your Wallet</a>
-                    <span class="navbar-text">{{ user.username }}</span>
+                    {% if user.is_authenticated %}
+                        <a class="navbar-brand" href="{% url 'dashboard' %}">Your Wallet</a>
+                        <div class="group-elements-r">
+                            <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button class="logout-btn" type="submit">Logout</button>
+                            </form>
+                            <span class="navbar-text">{{ user.username }}</span>
+                        </div>
+                    {% else %}
+                        <span class="navbar-brand">Your Wallet</span>
+                        <span class="navbar-text">Welcome !</span>
+                    {% endif %}
                 </div>
             </nav>
         {% block content %}{% endblock %}
