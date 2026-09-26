@@ -8,7 +8,5 @@
         <button type="submit">Add transaction</button>
     </form>
     
-    <form method="get" action="{% url 'dashboard' %}">
-        <button type="submit">Go back to dashboard</button>
-    </form>
+    <a class="container mt-4" href="{% url 'dashboard' %}">Go back to dashboard</a>
 {% endblock %}

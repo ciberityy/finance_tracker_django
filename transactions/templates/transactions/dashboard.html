@@ -17,25 +17,13 @@
             <li>No transactions yet.</li>
         {% endfor %}
     </ul>
+    <div class="d-flex flex-column align-items-start gap-2">
+        <a class="btn btn-primary" href="{% url 'view_transactions' %}">View transactions</a>
 
-    <form method="get" action="{% url 'view_transactions' %}">
-    <button type="submit">View transactions</button>
-    </form>
+        <a class="btn btn-primary" href="{% url 'add_transaction' %}">Add Transaction</a>
 
-    <form method="get" action="{% url 'add_transaction' %}">
-    <button type="submit">Add Transaction</button>
-    </form>
+        <a class="btn btn-primary" href="{% url 'view_categories' %}">View Categories</a>
 
-    <form method="get" action="{% url 'view_categories' %}">
-    <button type="submit">View Categories</button>
-    </form>
-
-    <form method="get" action="{% url 'add_category' %}">
-    <button type="submit">Add Category</button>
-    </form>
-
-     <form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">Logout</button>   
-</form> 
+        <a class="btn btn-primary" href="{% url 'add_category' %}">Add Category</a>
+    </div>
 {% endblock %}
