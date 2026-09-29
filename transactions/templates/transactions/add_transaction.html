@@ -1,12 +1,15 @@
 {% extends 'transactions/base.html' %}
 {% block title %}Add transaction{% endblock %}
 {% block content %} 
-    <h2>Add a transaction</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Add transaction</button>
-    </form>
-    
-    <a class="container mt-4" href="{% url 'dashboard' %}">Go back to dashboard</a>
-{% endblock %}
+    <div class="align-forms">
+        <h3>Add a transaction</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="align-btn">
+                <button class ="btn btn-primary" type="submit">Add transaction</button>
+                <a class="btn btn-secondary" href="{% url 'dashboard' %}">Go back to dashboard</a>
+            </div>
+        </form> 
+    </div>
+    {% endblock %}
