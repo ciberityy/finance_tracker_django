@@ -17,3 +17,13 @@
     align-items: center;
     gap: 5px;
 }
+
+.align-forms {
+    max-width: 900px;
+    margin-inline: auto; 
+}
+
+.align-btn {
+    display: flex;
+    gap: 8px;
+}
