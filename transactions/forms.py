@@ -21,14 +21,26 @@ class TransactionForm(forms.ModelForm):
     """
 
     def __init__(self, *args, **kwargs):
-        """Initialize the form with user-scoped category filtering.
+        """Initialize the form with user-scoped categories and Bootstrap styling.
 
-        Pops 'user' from kwargs (with None default) so callers that omit it do not
-        crash. Restricts category queryset to subcategories owned by the user.
+        Pops 'user' from kwargs (with None default) so callers that omit it do not crash.
+        Restricts the category queryset to subcategories owned by the user. Adds Bootstrap
+        CSS classes to field widgets: form-select for <select> elements (custom dropdown
+        styling with arrow and padding), form-control for text and number inputs. Uses
+        isinstance() to match Select subclasses. Applies classes via .update() on widget
+        attrs to preserve Django-set attributes like step="0.01" and maxlength="100".
+        The template can render {{ form.as_p }} and still receive full Bootstrap styling.
         """
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         self.fields['category'].queryset = Category.objects.filter(user=self.user, parent__isnull=False)
+
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.widgets.Select):
+                field.widget.attrs.update({'class': 'form-select'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})
+
 
     class Meta:
         model = Transaction
