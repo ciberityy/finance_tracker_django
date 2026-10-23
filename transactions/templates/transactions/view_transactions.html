@@ -1,17 +1,26 @@
 {% extends 'transactions/base.html' %}
-{% block title %}View transaction{% endblock %}
+{% block title %}Transactions{% endblock %}
 {% block content %} 
-<h2>Your transactions</h2>
-    <ul>
+<div class="align-forms">
+    <h3>Your transactions</h3>
+    <ul class="list-unstyled">
         {% for transaction in transactions %}
-        <li>{{ forloop.counter }}. {{transaction.date_time}} : {{ transaction.category }}; amount : {{transaction.amount}} dzd 
-            <a class="container mt-4" href="{% url 'edit_transaction' transaction.pk %}">Edit</a> 
-            <a class="container mt-4" href="{% url 'delete_transaction' transaction.pk %}">Delete</a>
+        <li class="d-flex gap-3 align-items-center">
+            <span>{{ forloop.counter }}. <strong>{{transaction.date_time}}</strong> : {{ transaction.category }}; 
+            amount : {{transaction.amount}} dzd</span> 
+            <div class="align-btn">
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'edit_transaction' transaction.pk %}">Edit</a> 
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'delete_transaction' transaction.pk %}">Delete</a>
+            </div>
         </li>
-    {% empty %}
+        {% empty %}
         <li>No transactions yet.</li>
-    {% endfor %}
+        {% endfor %}
     </ul>
-    <a class="container mt-4" href="{% url 'add_transaction' %}">Add Transaction</a>
-    <a class="container mt-4" href="{% url 'dashboard' %}">Go back to dashboard</a>
+    <div class="align-btn">
+        <a class="btn btn-sm btn-primary" href="{% url 'add_transaction' %}">Add Transaction</a>
+        <a class="btn btn-sm btn-secondary" href="{% url 'dashboard' %}">Go back to dashboard</a>
+    </div>
+</div>
 {% endblock %}
+
