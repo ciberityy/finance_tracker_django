@@ -1,52 +1,43 @@
-# Environment                                                                                              
-  venv/                                                                                                      
-  django-env/                                                                                                
-  .env                                                                                                       
-                                                                                                             
-  # Byte-compiled / optimized / DLL files                                                                    
-  __pycache__/                                                                                               
-  *.py[cod]                                                                                                  
-  *$py.class                                                                                                 
-  *.so                                                                                                       
-                                                                                                             
-  # Django-specific                                                                                          
-  db.sqlite3                                                                                               
-  *.log                                                                                                      
-  local_settings.py                                                                                          
-  finance_tracker/settings.py                                                                                
-                                                                                                             
-  # Distribution / packaging                                                                                 
-  .Python                                                                                                    
-  build/                                                                                                     
-  dist/                                                                                                    
-  *.egg-info/
+# Environment
+venv/
+django-env/
+.env
 
-  # IDE                                                                                                      
-  .idea/
-  .vscode/                                                                                                   
-  .claude/                                                                                                 
-                                                                                                             
-  # Testing                                                                                                  
-  .coverage                                                                                                  
-  htmlcov/                                                                                                   
-  .pytest_cache/                                                                                           
-                                                                                                             
-  # OS                                                                                                       
-  .DS_Store                                                                                                  
-                                                                                                             
-  # Personal notes (not committed)                                                                           
-  CLAUDE.md                                                                                                  
-  ROADMAP_v2.md                                                                                              
-  NOTES.md  
-.claude/
-CLAUDE.md ROADMAP_v2.md
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Django-specific
 db.sqlite3
+*.log
+local_settings.py
+finance_tracker/settings.py
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+.claude/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Personal notes (not committed; .notes/ is its own private repo)
 CLAUDE.md
 ROADMAP_v2.md
+NOTES.md
 .notes/
-django-env/
-finance_tracker/settings
-finance_tracker/
-transaction/__pycache__/
-transactions/migrations/
-transactions/__pycache__/
