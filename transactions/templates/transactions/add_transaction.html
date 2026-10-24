@@ -2,13 +2,13 @@
 {% block title %}Add transaction{% endblock %}
 {% block content %} 
     <div class="align-forms">
-        <h3>Add a transaction</h3>
+        <h2>Add a transaction</h2>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <div class="align-btn">
-                <button class ="btn btn-primary" type="submit">Add transaction</button>
-                <a class="btn btn-secondary" href="{% url 'dashboard' %}">Go back to dashboard</a>
+                <button class ="btn btn-sm btn-primary" type="submit">Add transaction</button>
+                <a class="btn btn-sm btn-secondary" href="{% url 'dashboard' %}">Go back to dashboard</a>
             </div>
         </form> 
     </div>
