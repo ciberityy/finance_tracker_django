@@ -1,12 +1,15 @@
 {% extends 'transactions/base.html' %}
 {% block title %}Edit transaction{% endblock %}
 {% block content %}
-        <h2>Edit your transactions</h2>
+    <div class="align-forms">
+        <h2>Edit your transaction</h2>
         <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Edit transaction</button>
-    </form>
-   
-    <a class="container mt-4" href="{% url 'dashboard' %}">Go back to dashboard</a>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="align-btn">
+                <button class="btn btn-sm btn-primary" type="submit">Save changes</button>
+                <a class="btn btn-sm btn-secondary" href="{% url 'dashboard' %}">Go back to dashboard</a>
+            </div>  
+        </form>
+    </div>
 {% endblock %}
