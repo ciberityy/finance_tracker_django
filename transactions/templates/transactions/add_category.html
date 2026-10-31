@@ -1,13 +1,15 @@
 {% extends 'transactions/base.html' %}
 {% block title %}Add category{% endblock %}
 {% block content %}
-
-<h2>Add a Category</h2>
+<div class="align-forms">
+    <h2>Add a Category</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Add Category</button>
+        <div class="align-btn">
+            <button class="btn btn-sm btn-primary" type="submit">Add Category</button>
+            <a class="btn btn-sm btn-secondary" href="{% url 'dashboard' %}">Go back to dashboard</a>
+        </div>
     </form>
-    
-    <a class="container mt-4" href="{% url 'dashboard' %}">Go back to dashboard</a>
+</div>
     {% endblock %}
