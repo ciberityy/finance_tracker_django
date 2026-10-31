@@ -1,18 +1,15 @@
 {% extends 'transactions/base.html' %}
 {% block title %}View category{% endblock %}
 {% block content %} 
-
-<h2>Your categories</h2>
+<div class="align-forms">
+    <h2>Your categories</h2>
     <ul>
         {% for category in categories %}
         <li>{{ forloop.counter }}.{{ category.name}}, type: {{ category.get_kind_display }}</li> 
-    {% empty %}
+        {% empty %}
         <li>No categories yet.</li>
-    {% endfor %}
+        {% endfor %}
     </ul>
-        
-    <form method='get' action="{% url 'add_category' %}">
-    <button type ="submit">Add category</button>  
-    </form>
-
-    {% endblock %}
+    <a class="btn btn-sm btn-primary" href="{% url 'add_category' %}">Add category</a>
+</div>
+{% endblock %}
