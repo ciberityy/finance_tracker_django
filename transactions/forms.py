@@ -9,9 +9,40 @@ class CustomUserCreationForm(UserCreationForm):
     """User registration form that adds an email field to the default Django form."""
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']    
+        fields = ['username', 'email', 'password1', 'password2']   
+        
+class FormStyling():
+    """Apply Bootstrap CSS classes to every field widget in a form.
 
-class TransactionForm(forms.ModelForm):
+    Mix this into a ModelForm subclass so all forms share the same styling in one
+    place (DRY). Select widgets, including subclasses, get ``form-select``; every
+    other widget gets ``form-control``. Classes are added with ``attrs.update()``,
+    so attributes Django sets, such as ``step="0.01"`` or ``maxlength``, are kept.
+    Templates can then render ``{{ form.as_p }}`` and still receive the styling.
+
+    List this class leftmost in the bases, e.g. ``class X(FormStyling, forms.ModelForm)``.
+    ``super()`` follows the MRO of the instance being built, so FormStyling reaches
+    ``ModelForm.__init__`` without inheriting from it. If it is listed after
+    ``ModelForm``, the chain stops at Django's ``BaseForm.__init__``, which does not
+    call ``super()``. No error is raised, but the inputs are silently left unstyled.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Run Django's form ``__init__`` first, then style the fields.
+
+        ``self.fields`` is created inside Django's ``__init__``, so the loop must run
+        after ``super().__init__()``. Looping first raises ``AttributeError``.
+        """
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.widgets.Select):
+                field.widget.attrs.update({'class': 'form-select'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})
+ 
+
+class TransactionForm(FormStyling, forms.ModelForm):
     """User-scoped transaction form that filters categories by ownership and hierarchy.
 
     Expects 'user' as a keyword argument on instantiation. Restricts the category
@@ -21,32 +52,21 @@ class TransactionForm(forms.ModelForm):
     """
 
     def __init__(self, *args, **kwargs):
-        """Initialize the form with user-scoped categories and Bootstrap styling.
+        """Initialize the form with user-scoped category choices.
 
         Pops 'user' from kwargs (with None default) so callers that omit it do not crash.
-        Restricts the category queryset to subcategories owned by the user. Adds Bootstrap
-        CSS classes to field widgets: form-select for <select> elements (custom dropdown
-        styling with arrow and padding), form-control for text and number inputs. Uses
-        isinstance() to match Select subclasses. Applies classes via .update() on widget
-        attrs to preserve Django-set attributes like step="0.01" and maxlength="100".
-        The template can render {{ form.as_p }} and still receive full Bootstrap styling.
+        Restricts the category queryset to subcategories owned by the user. Widget
+        styling is applied by the FormStyling parent class.
         """
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         self.fields['category'].queryset = Category.objects.filter(user=self.user, parent__isnull=False)
 
-        for field in self.fields.values():
-            if isinstance(field.widget, forms.widgets.Select):
-                field.widget.attrs.update({'class': 'form-select'})
-            else:
-                field.widget.attrs.update({'class': 'form-control'})
-
-
     class Meta:
         model = Transaction
         exclude = ['user']
 
-class CategoryForm(forms.ModelForm):
+class CategoryForm(FormStyling, forms.ModelForm):
     """User-scoped category form that enforces two-level hierarchy and kind consistency.
 
     Restricts the parent dropdown to show only top-level categories owned by the user,
@@ -84,9 +104,6 @@ class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         exclude = ['user']
-
-        
-
 
 
 
