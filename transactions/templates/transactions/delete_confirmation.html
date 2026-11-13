@@ -1,12 +1,13 @@
 {% extends 'transactions/base.html' %}
 {% block title %}Delete transaction{% endblock %}
-{% block content %} 
-        <h2>Delete a transaction</h2>
-        <form method="post">                                                
-      {% csrf_token %}                                                
-      <p>Are you sure you want to delete "{{ transaction }}"?</p>     
-      <button type="submit">Yes, delete</button>                      
-  </form>                                                             
-  <a href="{% url 'view_transactions' %}">Cancel</a>  
-
+{% block content %}
+  <div class="align-forms">
+    <h2>Delete a transaction</h2>
+    <form  method="post">                               
+      {% csrf_token %}
+      <p>Are you sure you want to delete "{{ transaction }}"?</p>
+      <button class="btn btn-sm btn-danger" type="submit">Yes, delete</button>        
+      <a class="btn btn-sm btn-secondary" href="{% url 'view_transactions' %}">Cancel</a>
+    </form>
+  </div>                          
 {% endblock %}
