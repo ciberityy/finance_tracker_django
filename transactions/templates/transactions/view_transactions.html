@@ -7,7 +7,7 @@
         {% for transaction in transactions %}
         <li class="d-flex gap-3 align-items-center">
             <span>{{ forloop.counter }}. <strong>{{transaction.date_time}}</strong> : {{ transaction.category }}; 
-            amount : {{transaction.amount}} dzd</span> 
+            amount : {{transaction.amount}} {{ currency }}</span> 
             <div class="align-btn">
                 <a class="btn btn-sm btn-outline-secondary" href="{% url 'edit_transaction' transaction.pk %}">Edit</a> 
                 <a class="btn btn-sm btn-outline-danger" href="{% url 'delete_transaction' transaction.pk %}">Delete</a>

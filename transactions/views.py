@@ -69,7 +69,7 @@ def dashboard(request):
         "total_expense": total_expense,
         "total_income": total_income,
         "net": net,
-        "category_data": category_data
+        "category_data": category_data,
     }
     
     return render(request, "transactions/dashboard.html", context)
