@@ -2,15 +2,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from .models import Category
-
 from .models import Transaction
 
-class CustomUserCreationForm(UserCreationForm):
-    """User registration form that adds an email field to the default Django form."""
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']   
-        
 class FormStyling():
     """Apply Bootstrap CSS classes to every field widget in a form.
 
@@ -40,7 +33,23 @@ class FormStyling():
                 field.widget.attrs.update({'class': 'form-select'})
             else:
                 field.widget.attrs.update({'class': 'form-control'})
- 
+
+class CustomUserCreationForm(FormStyling, UserCreationForm):
+    """Add an email field to Django's registration form and style its widgets.
+
+    Extends ``UserCreationForm`` with an ``email`` field, so the form shows ``username``,
+    ``email``, ``password1``, and ``password2``. ``FormStyling`` is listed leftmost in the
+    bases, so every widget receives its Bootstrap class (``form-control`` or ``form-select``).
+
+    The inner ``Meta`` inherits from ``UserCreationForm.Meta``, which keeps the parent's
+    ``field_classes`` (``username`` uses ``UsernameField``). It then overrides ``model`` and
+    ``fields``. The parent's ``Meta.fields`` is ``("username",)``, so the override is what
+    adds ``email`` to the form.
+    """
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
 
 class TransactionForm(FormStyling, forms.ModelForm):
     """User-scoped transaction form that filters categories by ownership and hierarchy.

@@ -23,7 +23,18 @@
     margin-inline: auto; 
 }
 
+.align-forms-narrower {
+    max-width: 400px;
+    margin-inline: auto;
+}
+
 .align-btn {
     display: flex;
     gap: 8px;
 }
+
+.helptext {
+    font-size: .875em;
+    color: var(--bs-secondary-color);
+}
+
