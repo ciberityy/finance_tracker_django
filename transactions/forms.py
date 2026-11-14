@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django import forms
 from .models import Category
 from .models import Transaction
@@ -7,15 +7,16 @@ from .models import Transaction
 class FormStyling():
     """Apply Bootstrap CSS classes to every field widget in a form.
 
-    Mix this into a ModelForm subclass so all forms share the same styling in one
-    place (DRY). Select widgets, including subclasses, get ``form-select``; every
+    Mix this into any Django form subclass (``forms.Form`` or ``forms.ModelForm``) so
+    all forms share the same styling in one place (DRY). Select widgets, including subclasses, get ``form-select``; every
     other widget gets ``form-control``. Classes are added with ``attrs.update()``,
     so attributes Django sets, such as ``step="0.01"`` or ``maxlength``, are kept.
     Templates can then render ``{{ form.as_p }}`` and still receive the styling.
 
     List this class leftmost in the bases, e.g. ``class X(FormStyling, forms.ModelForm)``.
-    ``super()`` follows the MRO of the instance being built, so FormStyling reaches
-    ``ModelForm.__init__`` without inheriting from it. If it is listed after
+    ``super()`` follows the MRO of the instance being built, so FormStyling reaches the
+    next ``__init__`` in the chain without inheriting from it: ``BaseModelForm.__init__``
+    for a ModelForm (which ``ModelForm`` inherits), or ``BaseForm.__init__`` for a plain Form. If it is listed after
     ``ModelForm``, the chain stops at Django's ``BaseForm.__init__``, which does not
     call ``super()``. No error is raised, but the inputs are silently left unstyled.
     """
@@ -49,6 +50,16 @@ class CustomUserCreationForm(FormStyling, UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
+
+class CustomAuthForm(FormStyling, AuthenticationForm):
+    """Provide a Bootstrap-styled login form based on Django's AuthenticationForm.
+
+    ``AuthenticationForm`` is a plain ``forms.Form``, not a ModelForm, so this class has no
+    inner ``Meta``. Its ``username`` and ``password`` fields are declared directly on the
+    parent class. ``FormStyling`` is listed leftmost in the bases, so its ``__init__`` runs
+    and applies the Bootstrap classes to both inputs. This class defines no ``__init__``
+    of its own because the inherited one is enough.
+    """
 
 
 class TransactionForm(FormStyling, forms.ModelForm):
