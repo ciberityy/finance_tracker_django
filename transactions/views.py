@@ -29,6 +29,10 @@ def dashboard(request):
     by category kind (Income vs Expense) to derive net position. This assumes
     categories are at most two levels deep; deeper hierarchies would require
     recursive aggregation.
+
+    Both passes group and match by category id, not name, so two distinct
+    categories that share a name (for example, two "Food" categories) stay
+    separate. Names are carried along only for display.
     """
     user = request.user
 
@@ -37,11 +41,14 @@ def dashboard(request):
     category_kind = transactions.values('category__kind').annotate(total=Sum('amount'))
     totals_by_kind = {item['category__kind']: item['total'] for item in category_kind}
     
-    spending_by_category = transactions.annotate(
-        top_level_name=Coalesce('category__parent__name', 'category__name')).values(
-            'top_level_name').annotate(total=Sum('amount'))
+    spending_by_category = (transactions.annotate(
+        top_level_id=Coalesce(
+            'category__parent__id', 'category__id'), 
+        top_level_name=Coalesce(
+            'category__parent__name', 'category__name'))
+        .values('top_level_id', 'top_level_name').annotate(total=Sum('amount')))
 
-    spending_by_subcategory = transactions.values("category__name", "category__parent__name").annotate(total=Sum("amount"))
+    spending_by_subcategory = transactions.values("category__id", "category__parent__id", 'category__name').annotate(total=Sum("amount"))
 
     category_data = {}
 
@@ -50,18 +57,19 @@ def dashboard(request):
     net = total_income - total_expense
 
     for item in spending_by_category:
+        category_id = item['top_level_id']
         category_name = item['top_level_name']
         category_total = item['total']
-        category_data[category_name] = {"total": category_total, "subcategories": []}
+        category_data[category_id] = {"name": category_name, "total": category_total, "subcategories": []}
 
     for item in spending_by_subcategory:
-        parent_name = item["category__parent__name"]
+        parent_id = item["category__parent__id"]       
         # Subcategories are only attached to parents that were already aggregated.
         # This filters out orphaned transactions and top-level categories with no parent.
-        if parent_name is not None and parent_name in category_data:
+        if parent_id is not None and parent_id in category_data:
             subcategory_name = item['category__name']
             sub_total = item.get("total")
-            category_data[parent_name]['subcategories'].append({"name": subcategory_name, "total": sub_total})
+            category_data[parent_id]['subcategories'].append({"name": subcategory_name, "total": sub_total})
 
     
     

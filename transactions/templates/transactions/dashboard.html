@@ -6,7 +6,7 @@
     <h2>Total income : {{ total_income }} {{ currency }}</h2>
     <ul>
         {% for key, value in category_data.items %}
-            <li> {{ key }} : {{ value.total }}
+            <li> {{ value.name }} : {{ value.total }}
                 <ul>
                     {% for sub in value.subcategories %}
                     <li>{{ sub.name }} : {{ sub.total }}</li>
