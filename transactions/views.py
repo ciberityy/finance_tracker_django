@@ -23,10 +23,14 @@ def dashboard(request):
     """
     Display user's financial summary: total income, total expense, net, and spending by category.
 
-    Uses two-pass aggregation: first query rolls all transactions into top-level
-    categories (using Coalesce to treat parentless categories as top-level), then
-    a second pass attaches subcategory breakdown to each parent. Computes totals
-    by category kind (Income vs Expense) to derive net position. This assumes
+    Computes totals by category kind (Income vs Expense) over all of the user's
+    transactions to derive net position.
+
+    The spending breakdown covers expense transactions only, so income categories
+    (for example, "Salary") never appear in it. It uses two-pass aggregation: the
+    first query rolls expense transactions into top-level categories (using
+    Coalesce to treat parentless categories as top-level), then a second pass
+    attaches the subcategory breakdown to each parent. This assumes
     categories are at most two levels deep; deeper hierarchies would require
     recursive aggregation.
 
@@ -37,23 +41,24 @@ def dashboard(request):
     user = request.user
 
     transactions = Transaction.objects.filter(user=user)
+    expenses_only_transactions = transactions.filter(category__kind=Category.Type.EXPENSE)
 
     category_kind = transactions.values('category__kind').annotate(total=Sum('amount'))
     totals_by_kind = {item['category__kind']: item['total'] for item in category_kind}
     
-    spending_by_category = (transactions.annotate(
+    spending_by_category = (expenses_only_transactions.annotate(
         top_level_id=Coalesce(
             'category__parent__id', 'category__id'), 
         top_level_name=Coalesce(
             'category__parent__name', 'category__name'))
         .values('top_level_id', 'top_level_name').annotate(total=Sum('amount')))
 
-    spending_by_subcategory = transactions.values("category__id", "category__parent__id", 'category__name').annotate(total=Sum("amount"))
+    spending_by_subcategory = expenses_only_transactions.values("category__id", "category__parent__id", 'category__name').annotate(total=Sum("amount"))
 
     category_data = {}
 
-    total_expense = totals_by_kind.get("Ex", 0)
-    total_income = totals_by_kind.get("In", 0)
+    total_expense = totals_by_kind.get(Category.Type.EXPENSE, 0)
+    total_income = totals_by_kind.get(Category.Type.INCOME, 0)
     net = total_income - total_expense
 
     for item in spending_by_category:
