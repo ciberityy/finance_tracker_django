@@ -91,8 +91,9 @@ class CategoryForm(FormStyling, forms.ModelForm):
 
     Restricts the parent dropdown to show only top-level categories owned by the user,
     preventing users from accidentally creating deeper nesting. The clean() method
-    enforces that subcategories must have the same kind (Income/Expense) as their parent,
-    maintaining type consistency across the two-level hierarchy.
+    rejects a duplicate name at the same level and enforces that subcategories must have
+    the same kind (Income/Expense) as their parent, maintaining type consistency across
+    the two-level hierarchy.
     """
 
     def __init__(self, *args, **kwargs):
@@ -108,16 +109,28 @@ class CategoryForm(FormStyling, forms.ModelForm):
         self.fields['parent'].empty_label = "None (turn into a top-level category)"
 
     def clean(self):
-        """Validate that a subcategory's kind matches its parent's kind.
+        """Run the duplicate-name check, then the kind-consistency check.
 
-        The two-level category hierarchy requires that all categories at a given level
-        share the same kind (Income or Expense). This validation prevents mixing
-        income and expense transactions within a single parent category.
+        First, rejects a name the user already has at the same level: same user, same
+        name, and same parent, where a parent of None means a top-level category.
+        Second, when a parent is set, rejects a kind (Income or Expense) that differs
+        from the parent's kind, so income and expense never mix within one parent.
+
+        The duplicate check lives in the form because ``user`` is excluded from this form.
+        During ``is_valid()``, Django skips model-level validation of a UniqueConstraint
+        when any of its fields is excluded, so without this check a duplicate would reach
+        the database and raise ``IntegrityError``.
         """
         self.cleaned_data = super().clean()
+
+        category_exists = Category.objects.filter(user=self.user, name=self.cleaned_data.get('name'), parent=self.cleaned_data.get('parent')).exists()
+
+        if category_exists:
+            raise forms.ValidationError(f"You already have a category named: {self.cleaned_data.get('name')}.")
+
         if self.cleaned_data.get('parent') is not None:
             if not self.cleaned_data.get('kind') == self.cleaned_data['parent'].kind:
-                raise forms.ValidationError(f'The new category ({self.cleaned_data.get('name')}), does not match the parents kind')
+                raise forms.ValidationError(f"The new category ({self.cleaned_data.get('name')}), does not match the parent's kind")
 
         return self.cleaned_data
 

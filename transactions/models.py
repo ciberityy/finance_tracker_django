@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from django.db.models import UniqueConstraint, Q 
 
 # Create your models here.
 
@@ -24,6 +25,7 @@ class Category(models.Model):
         INCOME = "In", "Income"
         EXPENSE = "Ex", "Expense"
 
+
     name = models.CharField(max_length=200,)
     parent = models.ForeignKey('self', related_name='subcategories', null=True, blank=True, on_delete=models.SET_NULL)
     user = models.ForeignKey(User, related_name="categories", on_delete=models.CASCADE)
@@ -34,7 +36,18 @@ class Category(models.Model):
                 max_length=3,
                 choices=Type.choices)
 
-
+    # Two partial constraints instead of one, because SQL treats NULL as never equal
+    # to NULL. A single constraint on (name, user, parent) would not stop two top-level
+    # categories with the same name: their parent is NULL, so the rows count as distinct.
+    # The first constraint covers top-level names (parent IS NULL). The second covers
+    # subcategory names (parent IS NOT NULL). nulls_distinct=False would fix this in one
+    # constraint, but Django ignores it on SQLite, which this project uses.
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['name', 'user'], condition=Q(parent__isnull=True), name='unique_top_level_category_name_per_user'),
+            UniqueConstraint(fields=['name', 'user', 'parent'], condition=Q(parent__isnull=False), name='unique_subcategory_name_per_parent')
+        ]
+    
     def __str__(self):
         """Return the category name."""
         return self.name
